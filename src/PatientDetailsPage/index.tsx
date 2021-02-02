@@ -57,7 +57,6 @@ const PatientDetailsPage: React.FC = () => {
         <List.Item>ssn: {currentPatient.ssn}</List.Item>
         <List.Item>occupation: {currentPatient.occupation}</List.Item>
       </List>
-      <Header as="h3">entries</Header>
       <Entries />
     </div>
   );
