@@ -4,12 +4,24 @@ import { apiBaseUrl } from '../constants';
 import { useParams } from 'react-router-dom';
 import { Patient } from '../types';
 import { setPatient, useStateValue } from '../state';
-import { Header, List } from 'semantic-ui-react';
+import { Header, Icon, List } from 'semantic-ui-react';
+import Entries from './Entries';
 
 const PatientDetailsPage: React.FC = () => {
   const [{ currentPatient }, dispatch] = useStateValue();
 
   const { id } = useParams<{ id: string }>();
+
+  const getGender = (genderString: string) => {
+    switch (genderString) {
+      case 'male':
+        return 'mars';
+      case 'female':
+        return 'venus';
+      default:
+        return 'genderless';
+    }
+  };
 
   React.useEffect(() => {
     const fetchPatientDetails = async () => {
@@ -37,12 +49,16 @@ const PatientDetailsPage: React.FC = () => {
 
   return (
     <div>
-      <Header as="h2">{currentPatient.name}</Header>
+      <Header as="h2">
+        {currentPatient.name}
+        <Icon name={getGender(currentPatient.gender)} />
+      </Header>
       <List>
         <List.Item>ssn: {currentPatient.ssn}</List.Item>
         <List.Item>occupation: {currentPatient.occupation}</List.Item>
-        <List.Item>gender: {currentPatient.gender}</List.Item>
       </List>
+      <Header as="h3">entries</Header>
+      <Entries />
     </div>
   );
 };
