@@ -1,35 +1,26 @@
 import React from 'react';
-import { Header, List } from 'semantic-ui-react';
+import { Header, SegmentGroup } from 'semantic-ui-react';
 import { useStateValue } from '../state';
-import { Diagnosis } from '../types';
+import EntryDetails from './EntryDetails';
 
 const Entries: React.FC = () => {
-  const [{ currentPatient, diagnoses },] = useStateValue();
-
-  const findDiagnosis = (code: string): Diagnosis | undefined => {
-    return diagnoses.find(d => d.code === code);
-  };
+  const [{ currentPatient },] = useStateValue();
 
   if (!currentPatient) {
     return <p>Loading</p>;
   }
 
+  if (currentPatient.entries.length === 0) {
+    return <p>No entries present for this patient.</p>;
+  }
+
+  console.log(currentPatient.entries);
   return (
     <div>
       <Header as="h3">entries</Header>
-      {currentPatient.entries.map(entry => {
-        return (
-          <div key={entry.id}>
-            <p>{entry.date} {entry.description}</p>
-            <List bulleted>
-              {entry.diagnosisCodes?.map(code =>
-                <List.Item key={code}>
-                  {code}: {findDiagnosis(code)?.name}
-                </List.Item>)}
-            </List>
-          </div>
-        );
-      })}
+      <SegmentGroup>
+        {currentPatient.entries.map(entry => <EntryDetails key={entry.id} entry={entry} />)}
+      </SegmentGroup>
     </div>
   );
 };
