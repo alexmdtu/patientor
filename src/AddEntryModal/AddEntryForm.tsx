@@ -4,6 +4,7 @@ import { Field, Formik, Form } from "formik";
 import { DiagnosisSelection, NumberField, TextField } from '../AddPatientModal/FormField';
 import { Button, Grid } from 'semantic-ui-react';
 import { useStateValue } from '../state';
+import { isDate } from '../utils';
 
 export type EntryFormValues = Omit<HealthCheckEntry, 'id'>;
 
@@ -28,9 +29,12 @@ const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
       onSubmit={onSubmit}
       validate={values => {
         const requiredError = "Field is required";
+        const invalidInput = "Input is invalid";
         const errors: { [field: string]: string } = {};
         if (!values.date) {
-          errors.name = requiredError;
+          errors.date = requiredError;
+        } else if (!isDate(values.date)) {
+          errors.date = invalidInput;
         }
         if (!values.specialist) {
           errors.specialist = requiredError;
@@ -41,7 +45,7 @@ const AddEntryForm: React.FC<Props> = ({ onSubmit, onCancel }) => {
         if (!values.description) {
           errors.description = requiredError;
         }
-        if (!values.healthCheckRating) {
+        if (values.healthCheckRating < 0 || values.healthCheckRating > 3) {
           errors.healthCheckRating = requiredError;
         }
         return errors;
