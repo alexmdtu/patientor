@@ -3,12 +3,23 @@ import axios from 'axios';
 import { apiBaseUrl } from '../constants';
 import { useParams } from 'react-router-dom';
 import { Patient } from '../types';
-import { setPatient, useStateValue } from '../state';
-import { Header, Icon, List } from 'semantic-ui-react';
+import { addEntry, setPatient, useStateValue } from '../state';
+import { Button, Header, Icon, List } from 'semantic-ui-react';
 import Entries from './Entries';
+import AddEntryModal from '../AddEntryModal';
+import { EntryFormValues } from '../AddEntryModal/AddEntryForm';
 
 const PatientDetailsPage: React.FC = () => {
   const [{ currentPatient }, dispatch] = useStateValue();
+
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<string | undefined>();
+
+  const openModal = (): void => setModalOpen(true);
+  const closeModal = (): void => {
+    setModalOpen(false);
+    setError(undefined);
+  };
 
   const { id } = useParams<{ id: string }>();
 
@@ -20,6 +31,20 @@ const PatientDetailsPage: React.FC = () => {
         return 'venus';
       default:
         return 'genderless';
+    }
+  };
+
+  const submitNewEntry = async (values: EntryFormValues) => {
+    try {
+      const { data: newPatient } = await axios.post<Patient>(
+        `${apiBaseUrl}/patients/${currentPatient?.id}/entries`,
+        values
+      );
+      dispatch(addEntry(newPatient));
+      closeModal();
+    } catch (e) {
+      console.error(e.response.data);
+      setError(e.response.data.error);
     }
   };
 
@@ -58,6 +83,13 @@ const PatientDetailsPage: React.FC = () => {
         <List.Item>occupation: {currentPatient.occupation}</List.Item>
       </List>
       <Entries />
+      <AddEntryModal
+        modalOpen={modalOpen}
+        onSubmit={submitNewEntry}
+        error={error}
+        onClose={closeModal}
+      />
+      <Button onClick={() => openModal()}>Add New Entry</Button>
     </div>
   );
 };

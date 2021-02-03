@@ -14,7 +14,6 @@ const Entries: React.FC = () => {
     return <p>No entries present for this patient.</p>;
   }
 
-  console.log(currentPatient.entries);
   return (
     <div>
       <Header as="h3">entries</Header>
